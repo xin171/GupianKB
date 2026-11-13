@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale="1.0," maximum-scale="1.0," user-scalable=no" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>五资产再平衡看板</title>
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -16,16 +16,24 @@
     box-shadow: 0 1px 4px rgba(0,0,0,0.06);
   }
   h2 { font-size: 15px; margin: 0 0 12px; color: #333; font-weight: 600; }
-  .row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f2f2f2; }
+  .row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 0; border-bottom: 1px solid #f2f2f2;
+  }
   .row:last-child { border-bottom: none; }
   .label { font-size: 13px; color: #888; }
   .big { font-size: 22px; font-weight: 700; }
   .mono { font-variant-numeric: tabular-nums; }
   .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -4px; }
-  table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 620px; }
-  th, td { padding: 7px 4px; text-align: right; border-bottom: 1px solid #f0f0f0; white-space: nowrap; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 680px; }
+  th, td {
+    padding: 7px 4px; text-align: right; border-bottom: 1px solid #f0f0f0;
+    white-space: nowrap;
+  }
   th { font-weight: 600; color: #888; font-size: 11px; background: #fafafa; }
-  td:first-child, th:first-child { text-align: left; position: sticky; left: 0; background: #fff; z-index: 1; }
+  td:first-child, th:first-child {
+    text-align: left; position: sticky; left: 0; background: #fff; z-index: 1;
+  }
   th:first-child { background: #fafafa; }
   input[type="number"] {
     width: 82px; padding: 5px 4px; border: 1px solid #ddd; border-radius: 6px;
@@ -38,9 +46,18 @@
   .buy { color: #e74c3c; font-weight: 600; }
   .sell { color: #27ae60; font-weight: 600; }
   .hold { color: #aaa; }
-  .warn { background: #fff8e1; color: #b8860b; padding: 9px 10px; border-radius: 6px; font-size: 12px; margin-top: 8px; line-height: 1.5; }
-  .ok { background: #e8f5e9; color: #2e7d32; padding: 9px 10px; border-radius: 6px; font-size: 12px; margin-top: 8px; line-height: 1.5; }
-  .danger { background: #ffebee; color: #c62828; padding: 9px 10px; border-radius: 6px; font-size: 12px; margin-top: 8px; line-height: 1.5; }
+  .warn {
+    background: #fff8e1; color: #b8860b; padding: 9px 10px; border-radius: 6px;
+    font-size: 12px; margin-top: 8px; line-height: 1.5;
+  }
+  .ok {
+    background: #e8f5e9; color: #2e7d32; padding: 9px 10px; border-radius: 6px;
+    font-size: 12px; margin-top: 8px; line-height: 1.5;
+  }
+  .danger {
+    background: #ffebee; color: #c62828; padding: 9px 10px; border-radius: 6px;
+    font-size: 12px; margin-top: 8px; line-height: 1.5;
+  }
   .muted { color: #999; font-size: 12px; line-height: 1.5; }
   button {
     padding: 10px 14px; border: none; border-radius: 8px; font-size: 14px;
@@ -50,28 +67,55 @@
   .btn-primary { background: #3498db; color: #fff; }
   .btn-sec { background: #eef1f4; color: #333; }
   .btn-danger { background: #fff; color: #e74c3c; border: 1px solid #e74c3c; }
-  .log-item { font-size: 12px; padding: 5px 0; border-bottom: 1px solid #f5f5f5; color: #777; line-height: 1.4; }
+  .log-item {
+    font-size: 12px; padding: 5px 0; border-bottom: 1px solid #f5f5f5;
+    color: #777; line-height: 1.4;
+  }
   .log-item:last-child { border-bottom: none; }
   .small-input { width: 110px; }
   .footer { text-align: center; color: #bbb; font-size: 11px; padding: 16px 0 8px; }
+  .premium-box {
+    background: #fafafa; border: 1px dashed #ddd; border-radius: 8px;
+    padding: 10px; margin-top: 10px;
+  }
 </style>
 </head>
 <body>
 
-{/* 概览 */}
-<div className="card">
+<!-- 概览：策略 / 溢价 / 实际 三层 -->
+<div class="card">
   <h2>组合概览</h2>
-  <div className="row"><span className="label">主组合市值</span><span className="big mono" id="totalMV">¥0</span></div>
-  <div className="row"><span className="label">历史最高市值</span><span className="mono" id="hwm">¥0</span></div>
-  <div className="row"><span className="label">当前回撤</span><span className="mono" id="drawdown" style="font-weight:600">0.00%</span></div>
-  <div className="row"><span className="label">备用金剩余</span><span className="mono" id="reserveLeft">¥200,000</span></div>
+  <div class="row">
+    <span class="label">策略市值（净值口径）</span>
+    <span class="big mono" id="totalMV">¥0</span>
+  </div>
+  <div class="row">
+    <span class="label">溢价成本（冻结）</span>
+    <span class="mono" id="premiumCostDisplay" style="color:#e67e22">¥0</span>
+  </div>
+  <div class="row">
+    <span class="label">实际总成本（建仓口径）</span>
+    <span class="mono" id="actualCost">—</span>
+  </div>
+  <div class="row">
+    <span class="label">历史最高策略市值</span>
+    <span class="mono" id="hwm">¥0</span>
+  </div>
+  <div class="row">
+    <span class="label">当前回撤（策略口径）</span>
+    <span class="mono" id="drawdown" style="font-weight:600">0.00%</span>
+  </div>
+  <div class="row">
+    <span class="label">备用金剩余</span>
+    <span class="mono" id="reserveLeft">¥200,000</span>
+  </div>
   <div id="reserveSignal"></div>
 </div>
 
-{/* 资产明细 */}
-<div className="card">
+<!-- 资产明细 -->
+<div class="card">
   <h2>资产明细</h2>
-  <div className="table-wrap">
+  <div class="table-wrap">
     <table>
       <thead>
         <tr>
@@ -82,57 +126,90 @@
       <tbody id="assetRows"></tbody>
     </table>
   </div>
-  <div className="muted" style="margin-top:10px;">
-    纳指请填<b>每日官方净值</b>（非场内价格），避免溢价扭曲权重。其余四类填收盘价即可。
+  <div class="muted" style="margin-top:10px;">
+    纳指请填<b>每日官方净值</b>（非场内价格）。建仓时多付的溢价，请在下方“溢价成本”卡片单独记录一次。
   </div>
 </div>
 
-{/* 纳指溢价闸门 */}
-<div className="card">
-  <h2>纳指溢价闸门</h2>
-  <div className="row">
-    <span className="label">当前溢价率（%）</span>
-    <input type="number" id="premium" step="0.1" placeholder="如 15.5" inputmode="decimal" />
+<!-- 溢价成本（冻结科目） -->
+<div class="card">
+  <h2>溢价成本（冻结科目）</h2>
+  <div class="muted" style="margin-bottom:10px;">
+    建仓时记录一次：溢价成本 = 纳指份额 ×（实际成交价 − 建仓日净值）。记录后冻结，不参与权重、回撤、备用金信号。
   </div>
-  <div id="premiumSignal" className="muted">填入溢价率后判断是否允许场内买入</div>
+  <div class="premium-box">
+    <div class="row">
+      <span class="label">纳指建仓份额</span>
+      <input type="number" id="premShares" step="1" inputmode="numeric" placeholder="0">
+    </div>
+    <div class="row">
+      <span class="label">实际成交价</span>
+      <input type="number" id="premPrice" step="0.001" inputmode="decimal" placeholder="0">
+    </div>
+    <div class="row">
+      <span class="label">建仓日净值</span>
+      <input type="number" id="premNav" step="0.001" inputmode="decimal" placeholder="0">
+    </div>
+    <div class="row">
+      <span class="label">计算溢价成本</span>
+      <span class="mono" id="premCalc" style="font-weight:600;color:#e67e22">¥0</span>
+    </div>
+    <button class="btn-sec" onclick="recordPremium()">确认记录并冻结</button>
+    <button class="btn-sec" onclick="resetPremium()">清零溢价成本</button>
+  </div>
+  <div id="premiumNote" class="muted" style="margin-top:8px;"></div>
 </div>
 
-{/* 操作 */}
-<div className="card">
+<!-- 纳指溢价闸门（当前） -->
+<div class="card">
+  <h2>纳指溢价闸门（当前）</h2>
+  <div class="row">
+    <span class="label">当前溢价率（%）</span>
+    <input type="number" id="premium" step="0.1" placeholder="如 15.5" inputmode="decimal">
+  </div>
+  <div id="premiumSignal" class="muted">填入溢价率后判断是否允许场内买入</div>
+</div>
+
+<!-- 操作 -->
+<div class="card">
   <h2>操作</h2>
-  <button className="btn-primary" onclick="run()">运行计算</button>
-  <button className="btn-sec" onclick="exportBackup()">导出备份</button>
-  <button className="btn-sec" onclick="document.getElementById('importFile').click()">导入备份</button>
-  <input type="file" id="importFile" accept=".json,application/json" style="display:none" onchange="importBackup(event)" />
-  <button className="btn-sec" onclick="resetHWM()">重置历史最高</button>
-  <button className="btn-danger" onclick="clearAll()">清空数据</button>
-  <div className="muted" style="margin-top:8px;">
+  <button class="btn-primary" onclick="run()">运行计算</button>
+  <button class="btn-sec" onclick="exportBackup()">导出备份</button>
+  <button class="btn-sec" onclick="document.getElementById('importFile').click()">导入备份</button>
+  <input type="file" id="importFile" accept=".json,application/json" style="display:none" onchange="importBackup(event)">
+  <button class="btn-sec" onclick="resetHWM()">重置历史最高</button>
+  <button class="btn-danger" onclick="clearAll()">清空数据</button>
+  <div class="muted" style="margin-top:8px;">
     新增资金（含备用金投入）后，回撤计算会被稀释。如希望回撤不受资金进出影响，请在投入后点“重置历史最高”。
   </div>
 </div>
 
-{/* 备用金 */}
-<div className="card">
+<!-- 备用金 -->
+<div class="card">
   <h2>备用金</h2>
-  <div className="row">
-    <span className="label">备用金总额</span><span className="mono">¥200,000</span>
+  <div class="row">
+    <span class="label">备用金总额</span>
+    <span class="mono">¥200,000</span>
   </div>
-  <div className="row">
-    <span className="label">已投入</span>
-    <input type="number" id="reserveDeployed" step="1000" placeholder="0" className="small-input" inputmode="numeric" />
+  <div class="row">
+    <span class="label">已投入</span>
+    <input type="number" id="reserveDeployed" step="1000" placeholder="0" class="small-input" inputmode="numeric">
   </div>
-  <div className="muted" style="margin-top:8px;">
+  <div class="muted" style="margin-top:8px;">
     档位：回撤5%投50%（10万）｜8%投30%（6万）｜12%投20%（4万）。执行后请在上方填入累计已投入金额。
   </div>
 </div>
 
-{/* 日志 */}
-<div className="card">
+<!-- 日志 -->
+<div class="card">
   <h2>操作日志</h2>
+  <div class="muted" style="margin-bottom:8px;">
+    0:00–9:29 的日志自动忽略；当天日志全部保留；历史每天只保留最后一条。
+  </div>
   <div id="logs"></div>
 </div>
 
-<div className="footer">数据仅存本机浏览器 · 请定期导出备份</div>
+<div class="footer">数据仅存本机浏览器 · 请定期导出备份</div>
 
 <script>
 // ================= 配置 =================
@@ -150,7 +227,7 @@ const CONFIG = {
     { dd: 8,  ratio: 0.3, label: '回撤8%档' },
     { dd: 12, ratio: 0.2, label: '回撤12%档' }
   ],
-  storageKey: 'fiveAssetDash_v1'
+  storageKey: 'fiveAssetDash_v3'
 };
 
 // ================= 状态 =================
@@ -160,6 +237,8 @@ function defaultState() {
     highWaterMark: 0,
     reserveDeployed: 0,
     premium: null,
+    premiumCost: 0,
+    premiumDetail: null,
     logs: [],
     lastRun: 0
   };
@@ -177,9 +256,44 @@ function save() {
   catch (e) { console.warn('保存失败', e); }
 }
 
+// ================= 本地日期 =================
+function getLocalDateStr(d = new Date()) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+// ================= 日志 =================
 function log(msg) {
-  state.logs.unshift({ time: new Date().toLocaleString('zh-CN'), msg });
-  if (state.logs.length > 200) state.logs.length = 200;
+  const now = new Date();
+  const h = now.getHours();
+  const m = now.getMinutes();
+
+  // 0:00 – 9:29 忽略，不记录
+  if (h < 9 || (h === 9 && m < 30)) return;
+
+  const today = getLocalDateStr(now);
+  const timeStr = now.toLocaleString('zh-CN');
+
+  state.logs.unshift({ date: today, time: timeStr, msg });
+
+  // 按日期分组：今天全留，历史每天只留最后一条（数组首条即该日最新）
+  const byDate = {};
+  state.logs.forEach(l => {
+    (byDate[l.date] = byDate[l.date] || []).push(l);
+  });
+
+  const cleaned = [];
+  Object.keys(byDate).sort().reverse().forEach(date => {
+    if (date === today) {
+      cleaned.push(...byDate[date]);
+    } else {
+      cleaned.push(byDate[date][0]);
+    }
+  });
+
+  state.logs = cleaned.slice(0, 500);
 }
 
 // ================= 渲染 =================
@@ -187,43 +301,65 @@ function fmt(n) {
   if (n === null || n === undefined || isNaN(n)) return '—';
   return '¥' + Math.round(n).toLocaleString('zh-CN');
 }
-function pct(n) {
-  if (n === null || isNaN(n)) return '—';
-  return (n * 100).toFixed(1) + '%';
-}
-function pp(n) {
-  if (n === null || isNaN(n)) return '—';
-  return (n >= 0 ? '+' : '') + n.toFixed(1) + 'pp';
-}
+function pct(n) { return (n * 100).toFixed(1) + '%'; }
+function pp(n) { return (n >= 0 ? '+' : '') + n.toFixed(1) + 'pp'; }
 
 function renderInputs() {
   const tbody = document.getElementById('assetRows');
   tbody.innerHTML = state.assets.map(a => `
     <tr>
-      <td>${a.name}<br /><span className="muted">${a.code}</span></td>
-      <td><input type="number" id="sh-${a.id}" value="${a.shares || ''}" step="1" inputmode="numeric" placeholder="0" /></td>
-      <td><input type="number" id="pr-${a.id}" value="${a.price || ''}" step="0.001" inputmode="decimal" placeholder="0" /></td>
-      <td className="mono" id="mv-${a.id}">—</td>
-      <td className="mono" id="cw-${a.id}">—</td>
-      <td className="mono">${pct(a.target)}</td>
-      <td className="mono" id="dv-${a.id}">—</td>
+      <td>${a.name}<br><span class="muted">${a.code}</span></td>
+      <td><input type="number" id="sh-${a.id}" value="${a.shares || ''}" step="1" inputmode="numeric" placeholder="0"></td>
+      <td><input type="number" id="pr-${a.id}" value="${a.price || ''}" step="0.001" inputmode="decimal" placeholder="0"></td>
+      <td class="mono" id="mv-${a.id}">—</td>
+      <td class="mono" id="cw-${a.id}">—</td>
+      <td class="mono">${pct(a.target)}</td>
+      <td class="mono" id="dv-${a.id}">—</td>
       <td id="sg-${a.id}">—</td>
     </tr>
   `).join('');
 
-  document.getElementById('reserveLeft').textContent =
-    fmt(CONFIG.reserveTotal - state.reserveDeployed);
+  document.getElementById('reserveLeft').textContent = fmt(CONFIG.reserveTotal - state.reserveDeployed);
   document.getElementById('reserveDeployed').value = state.reserveDeployed || '';
   document.getElementById('hwm').textContent = fmt(state.highWaterMark);
   if (state.premium !== null) document.getElementById('premium').value = state.premium;
+
+  document.getElementById('premiumCostDisplay').textContent = fmt(state.premiumCost);
+  if (state.premiumDetail) {
+    document.getElementById('premShares').value = state.premiumDetail.shares;
+    document.getElementById('premPrice').value = state.premiumDetail.price;
+    document.getElementById('premNav').value = state.premiumDetail.nav;
+    document.getElementById('premCalc').textContent = fmt(state.premiumDetail.cost);
+    document.getElementById('premiumNote').textContent =
+      `已冻结：${state.premiumDetail.shares} 份 × (${state.premiumDetail.price} − ${state.premiumDetail.nav}) = ${fmt(state.premiumDetail.cost)}`;
+  }
 }
 
 function renderLogs() {
   const el = document.getElementById('logs');
-  if (!state.logs.length) { el.innerHTML = '<div className="muted">暂无记录</div>'; return; }
-  el.innerHTML = state.logs.slice(0, 30).map(l =>
-    `<div className="log-item">${l.time} — ${l.msg}</div>`
-  ).join('');
+  if (!state.logs.length) {
+    el.innerHTML = '<div class="muted">暂无记录</div>';
+    return;
+  }
+
+  const today = getLocalDateStr();
+  const byDate = {};
+  state.logs.forEach(l => {
+    (byDate[l.date] = byDate[l.date] || []).push(l);
+  });
+
+  let html = '';
+  Object.keys(byDate).sort().reverse().forEach(date => {
+    const isToday = date === today;
+    const items = byDate[date];
+    html += `<div style="margin:10px 0 4px;font-weight:600;color:${isToday ? '#3498db' : '#aaa'};font-size:12px;">
+      ${isToday ? '今天' : date} ${isToday ? `（${items.length} 条）` : '（每日保留最后一条）'}</div>`;
+    items.forEach(l => {
+      html += `<div class="log-item">${l.time.slice(-8)} — ${l.msg}</div>`;
+    });
+  });
+
+  el.innerHTML = html;
 }
 
 function renderPremium() {
@@ -246,9 +382,44 @@ function renderPremium() {
   }
 }
 
+// ================= 溢价成本记录 =================
+document.getElementById('premShares').addEventListener('input', updatePremCalc);
+document.getElementById('premPrice').addEventListener('input', updatePremCalc);
+document.getElementById('premNav').addEventListener('input', updatePremCalc);
+
+function updatePremCalc() {
+  const s = parseFloat(document.getElementById('premShares').value) || 0;
+  const p = parseFloat(document.getElementById('premPrice').value) || 0;
+  const n = parseFloat(document.getElementById('premNav').value) || 0;
+  const cost = s > 0 && p > 0 && n > 0 ? s * (p - n) : 0;
+  document.getElementById('premCalc').textContent = fmt(cost);
+  return cost;
+}
+
+function recordPremium() {
+  const s = parseFloat(document.getElementById('premShares').value) || 0;
+  const p = parseFloat(document.getElementById('premPrice').value) || 0;
+  const n = parseFloat(document.getElementById('premNav').value) || 0;
+  if (s <= 0 || p <= 0 || n <= 0) { alert('请填写份额、成交价、建仓净值'); return; }
+  if (p < n) { alert('成交价低于净值，这是折价，不是溢价成本'); return; }
+  const cost = s * (p - n);
+  if (state.premiumDetail && !confirm('已有冻结记录，确认覆盖？')) return;
+  state.premiumCost = cost;
+  state.premiumDetail = { shares: s, price: p, nav: n, cost };
+  log(`冻结溢价成本：${s} 份 × (${p} − ${n}) = ${fmt(cost)}`);
+  save(); renderInputs(); renderLogs(); run();
+}
+
+function resetPremium() {
+  if (!confirm('清零溢价成本？仅影响冻结科目，不影响策略市值。')) return;
+  state.premiumCost = 0;
+  state.premiumDetail = null;
+  log('清零溢价成本');
+  save(); renderInputs(); renderLogs(); run();
+}
+
 // ================= 核心计算 =================
 function run() {
-  // 读取输入
   state.assets.forEach(a => {
     a.shares = parseFloat(document.getElementById(`sh-${a.id}`).value) || 0;
     a.price  = parseFloat(document.getElementById(`pr-${a.id}`).value) || 0;
@@ -256,26 +427,24 @@ function run() {
   });
 
   const totalMV = state.assets.reduce((s, a) => s + a.marketValue, 0);
-
-  // 更新历史最高
   if (totalMV > state.highWaterMark) state.highWaterMark = totalMV;
 
-  // 回撤
   const drawdown = state.highWaterMark > 0
     ? (totalMV / state.highWaterMark - 1) * 100
     : 0;
 
-  // 渲染概览
   document.getElementById('totalMV').textContent = fmt(totalMV);
   document.getElementById('hwm').textContent = fmt(state.highWaterMark);
+  document.getElementById('premiumCostDisplay').textContent = fmt(state.premiumCost);
+  document.getElementById('actualCost').textContent = fmt(totalMV + state.premiumCost);
+
   const ddEl = document.getElementById('drawdown');
   ddEl.textContent = drawdown.toFixed(2) + '%';
   ddEl.style.color = drawdown <= -5 ? '#e74c3c' : drawdown < 0 ? '#f39c12' : '#27ae60';
 
-  // 渲染各资产
   state.assets.forEach(a => {
     const cw = totalMV > 0 ? a.marketValue / totalMV : 0;
-    const dev = (cw - a.target) * 100; // 百分点
+    const dev = (cw - a.target) * 100;
     a.currentWeight = cw;
     a.deviation = dev;
 
@@ -293,7 +462,6 @@ function run() {
       sgEl.className = 'sell';
       sgEl.textContent = `卖出 ${fmt(adjustAmount)}`;
     } else if (dev < -a.threshold) {
-      // 纳指溢价闸门
       if (a.id === 'nasdaq' && state.premium !== null && state.premium > 5) {
         sgEl.className = 'hold';
         sgEl.textContent = '暂停买入（溢价高）';
@@ -307,7 +475,6 @@ function run() {
     }
   });
 
-  // 备用金信号
   const rsEl = document.getElementById('reserveSignal');
   const remaining = CONFIG.reserveTotal - state.reserveDeployed;
   let html = '';
@@ -315,18 +482,16 @@ function run() {
     for (const t of CONFIG.tranches) {
       if (Math.abs(drawdown) >= t.dd) {
         const suggest = CONFIG.reserveTotal * t.ratio;
-        html += `<div className="warn">⚠ ${t.label}已触发：建议投入约 ${fmt(suggest)}（备用金剩余 ${fmt(remaining)}）</div>`;
+        html += `<div class="warn">⚠ ${t.label}已触发：建议投入约 ${fmt(suggest)}（备用金剩余 ${fmt(remaining)}）</div>`;
       }
     }
   }
-  rsEl.innerHTML = html || '<div className="ok">当前回撤未触发备用金档位</div>';
-
+  rsEl.innerHTML = html || '<div class="ok">当前回撤未触发备用金档位</div>';
   document.getElementById('reserveLeft').textContent = fmt(remaining);
 
-  // 日志（60秒内不重复）
   const now = Date.now();
   if (now - state.lastRun > 60000) {
-    log(`运行：市值 ${fmt(totalMV)}，回撤 ${drawdown.toFixed(2)}%`);
+    log(`运行：策略市值 ${fmt(totalMV)}，回撤 ${drawdown.toFixed(2)}%，冻结溢价 ${fmt(state.premiumCost)}`);
     state.lastRun = now;
   }
 
@@ -340,7 +505,7 @@ function exportBackup() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `dashboard-${new Date().toISOString().slice(0, 10)}.json`;
+  a.download = `dashboard-${getLocalDateStr()}.json`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -358,6 +523,10 @@ function importBackup(e) {
     try {
       const data = JSON.parse(ev.target.result);
       if (!Array.isArray(data.assets)) throw new Error('文件格式不正确');
+      // 兼容旧版纯字符串日志
+      if (data.logs && data.logs.length && typeof data.logs[0] === 'string') {
+        data.logs = data.logs.map(s => ({ date: '1970-01-01', time: s, msg: s }));
+      }
       state = Object.assign(defaultState(), data);
       save();
       renderInputs();
@@ -374,10 +543,10 @@ function importBackup(e) {
 }
 
 function resetHWM() {
-  if (!confirm('将历史最高市值重置为当前市值？用于新增资金后避免回撤被稀释。')) return;
+  if (!confirm('将历史最高策略市值重置为当前策略市值？')) return;
   const totalMV = state.assets.reduce((s, a) => s + a.shares * a.price, 0);
   state.highWaterMark = totalMV;
-  log(`重置历史最高市值为 ${fmt(totalMV)}`);
+  log(`重置历史最高策略市值为 ${fmt(totalMV)}`);
   save();
   renderLogs();
   run();
@@ -394,9 +563,12 @@ function clearAll() {
   document.getElementById('hwm').textContent = '¥0';
   document.getElementById('drawdown').textContent = '0.00%';
   document.getElementById('reserveSignal').innerHTML = '';
+  document.getElementById('actualCost').textContent = '—';
+  document.getElementById('premiumCostDisplay').textContent = '¥0';
+  document.getElementById('premiumNote').textContent = '';
 }
 
-// ================= 事件绑定 =================
+// ================= 事件 =================
 document.getElementById('premium').addEventListener('input', function () {
   const v = parseFloat(this.value);
   state.premium = isNaN(v) ? null : v;
@@ -408,8 +580,7 @@ document.getElementById('reserveDeployed').addEventListener('input', function ()
   const v = parseFloat(this.value);
   state.reserveDeployed = isNaN(v) ? 0 : Math.max(0, v);
   save();
-  document.getElementById('reserveLeft').textContent =
-    fmt(CONFIG.reserveTotal - state.reserveDeployed);
+  document.getElementById('reserveLeft').textContent = fmt(CONFIG.reserveTotal - state.reserveDeployed);
 });
 
 // ================= 初始化 =================
