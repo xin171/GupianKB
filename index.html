@@ -16,13 +16,29 @@
     box-shadow: 0 1px 4px rgba(0,0,0,0.06);
   }
   h2 { font-size: 15px; margin: 0 0 12px; color: #333; font-weight: 600; }
+  .two-col { display: flex; gap: 16px; }
+  .two-col > .col { flex: 1 1 50%; min-width: 0; }
+  .two-col > .col.right {
+    border-left: 1px solid #f0f0f0; padding-left: 16px;
+  }
+  .col-title {
+    font-size: 12px; font-weight: 600; color: #888;
+    margin: 0 0 8px; letter-spacing: 0.5px;
+  }
+  @media (max-width: 640px) {
+    .two-col { flex-direction: column; gap: 12px; }
+    .two-col > .col.right {
+      border-left: none; padding-left: 0;
+      border-top: 1px solid #f0f0f0; padding-top: 12px;
+    }
+  }
   .row {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 8px 0; border-bottom: 1px solid #f2f2f2;
+    padding: 7px 0; border-bottom: 1px solid #f2f2f2;
   }
   .row:last-child { border-bottom: none; }
   .label { font-size: 13px; color: #888; }
-  .big { font-size: 22px; font-weight: 700; }
+  .big { font-size: 20px; font-weight: 700; }
   .mono { font-variant-numeric: tabular-nums; }
   .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -4px; }
   table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 680px; }
@@ -47,25 +63,26 @@
   .sell { color: #27ae60; font-weight: 600; }
   .hold { color: #aaa; }
   .warn {
-    background: #fff8e1; color: #b8860b; padding: 9px 10px; border-radius: 6px;
+    background: #fff8e1; color: #b8860b; padding: 8px 10px; border-radius: 6px;
     font-size: 12px; margin-top: 8px; line-height: 1.5;
   }
   .ok {
-    background: #e8f5e9; color: #2e7d32; padding: 9px 10px; border-radius: 6px;
+    background: #e8f5e9; color: #2e7d32; padding: 8px 10px; border-radius: 6px;
     font-size: 12px; margin-top: 8px; line-height: 1.5;
   }
   .danger {
-    background: #ffebee; color: #c62828; padding: 9px 10px; border-radius: 6px;
+    background: #ffebee; color: #c62828; padding: 8px 10px; border-radius: 6px;
     font-size: 12px; margin-top: 8px; line-height: 1.5;
   }
   .muted { color: #999; font-size: 12px; line-height: 1.5; }
   button {
-    padding: 10px 14px; border: none; border-radius: 8px; font-size: 14px;
-    cursor: pointer; margin: 0 8px 8px 0; font-weight: 500;
+    padding: 9px 12px; border: none; border-radius: 8px; font-size: 13px;
+    cursor: pointer; margin: 0 6px 6px 0; font-weight: 500;
   }
   button:active { opacity: 0.7; }
   .btn-primary { background: #3498db; color: #fff; }
   .btn-sec { background: #eef1f4; color: #333; }
+  .btn-confirm { background: #27ae60; color: #fff; }
   .btn-danger { background: #fff; color: #e74c3c; border: 1px solid #e74c3c; }
   .log-item {
     font-size: 12px; padding: 5px 0; border-bottom: 1px solid #f5f5f5;
@@ -74,42 +91,90 @@
   .log-item:last-child { border-bottom: none; }
   .small-input { width: 110px; }
   .footer { text-align: center; color: #bbb; font-size: 11px; padding: 16px 0 8px; }
-  .premium-box {
-    background: #fafafa; border: 1px dashed #ddd; border-radius: 8px;
-    padding: 10px; margin-top: 10px;
+  .premium-input-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 0;
+  }
+  .premium-input-row .label { font-size: 12px; }
+  .premium-input-row input { width: 90px; }
+  .badge-est {
+    display: inline-block; font-size: 10px; padding: 1px 6px; border-radius: 4px;
+    background: #fff3e0; color: #e67e22; margin-left: 4px;
+  }
+  .badge-confirmed {
+    display: inline-block; font-size: 10px; padding: 1px 6px; border-radius: 4px;
+    background: #e8f5e9; color: #2e7d32; margin-left: 4px;
   }
 </style>
 </head>
 <body>
 
-<!-- 概览：策略 / 溢价 / 实际 三层 -->
+<!-- 概览 + 溢价成本：左右各半 -->
 <div class="card">
-  <h2>组合概览</h2>
-  <div class="row">
-    <span class="label">策略市值（净值口径）</span>
-    <span class="big mono" id="totalMV">¥0</span>
+  <div class="two-col">
+    <!-- 左：组合概览 -->
+    <div class="col">
+      <div class="col-title">组合概览</div>
+      <div class="row">
+        <span class="label">策略市值（净值口径）</span>
+        <span class="big mono" id="totalMV">¥0</span>
+      </div>
+      <div class="row">
+        <span class="label">溢价成本（冻结）</span>
+        <span class="mono" id="premiumCostDisplay" style="color:#e67e22">¥0</span>
+      </div>
+      <div class="row">
+        <span class="label">实际总成本（建仓口径）</span>
+        <span class="mono" id="actualCost">—</span>
+      </div>
+      <div class="row">
+        <span class="label">历史最高策略市值</span>
+        <span class="mono" id="hwm">¥0</span>
+      </div>
+      <div class="row">
+        <span class="label">当前回撤（策略口径）</span>
+        <span class="mono" id="drawdown" style="font-weight:600">0.00%</span>
+      </div>
+      <div class="row">
+        <span class="label">备用金剩余</span>
+        <span class="mono" id="reserveLeft">¥200,000</span>
+      </div>
+      <div class="row">
+        <span class="label">纳指净值状态</span>
+        <span class="mono" id="navStatus" style="font-weight:600">—</span>
+      </div>
+      <div id="reserveSignal"></div>
+    </div>
+
+    <!-- 右：溢价成本冻结 -->
+    <div class="col right">
+      <div class="col-title">溢价成本（冻结科目）</div>
+      <div class="muted" style="margin-bottom:6px;">
+        溢价成本 = 纳指份额 ×（实际成交价 − 建仓日净值）。记录后冻结，不参与权重、回撤、备用金信号。
+      </div>
+      <div class="premium-input-row">
+        <span class="label">纳指建仓份额</span>
+        <input type="number" id="premShares" step="1" inputmode="numeric" placeholder="0">
+      </div>
+      <div class="premium-input-row">
+        <span class="label">实际成交价</span>
+        <input type="number" id="premPrice" step="0.001" inputmode="decimal" placeholder="0">
+      </div>
+      <div class="premium-input-row">
+        <span class="label">建仓日净值</span>
+        <input type="number" id="premNav" step="0.001" inputmode="decimal" placeholder="0">
+      </div>
+      <div class="row" style="border-bottom:none;">
+        <span class="label">计算溢价成本</span>
+        <span class="mono" id="premCalc" style="font-weight:600;color:#e67e22">¥0</span>
+      </div>
+      <div style="margin-top:6px;">
+        <button class="btn-sec" onclick="recordPremium()">确认记录并冻结</button>
+        <button class="btn-sec" onclick="resetPremium()">清零</button>
+      </div>
+      <div id="premiumNote" class="muted" style="margin-top:6px;"></div>
+    </div>
   </div>
-  <div class="row">
-    <span class="label">溢价成本（冻结）</span>
-    <span class="mono" id="premiumCostDisplay" style="color:#e67e22">¥0</span>
-  </div>
-  <div class="row">
-    <span class="label">实际总成本（建仓口径）</span>
-    <span class="mono" id="actualCost">—</span>
-  </div>
-  <div class="row">
-    <span class="label">历史最高策略市值</span>
-    <span class="mono" id="hwm">¥0</span>
-  </div>
-  <div class="row">
-    <span class="label">当前回撤（策略口径）</span>
-    <span class="mono" id="drawdown" style="font-weight:600">0.00%</span>
-  </div>
-  <div class="row">
-    <span class="label">备用金剩余</span>
-    <span class="mono" id="reserveLeft">¥200,000</span>
-  </div>
-  <div id="reserveSignal"></div>
 </div>
 
 <!-- 资产明细 -->
@@ -127,37 +192,32 @@
     </table>
   </div>
   <div class="muted" style="margin-top:10px;">
-    纳指请填<b>每日官方净值</b>（非场内价格）。建仓时多付的溢价，请在下方“溢价成本”卡片单独记录一次。
+    纳指请填<b>每日官方净值</b>（非场内价格）。盘中可用估算值，收盘后请在下方“收盘确认”录入真实溢价率，覆盖为确认净值。
   </div>
 </div>
 
-<!-- 溢价成本（冻结科目） -->
+<!-- 收盘确认：纳指真实净值 -->
 <div class="card">
-  <h2>溢价成本（冻结科目）</h2>
+  <h2>收盘确认（纳指真实净值）</h2>
   <div class="muted" style="margin-bottom:10px;">
-    建仓时记录一次：溢价成本 = 纳指份额 ×（实际成交价 − 建仓日净值）。记录后冻结，不参与权重、回撤、备用金信号。
+    填入今日收盘价和今日真实溢价率，反推真实净值 = 收盘价 ÷ (1 + 溢价率)。确认后会覆盖纳指价格字段，并重算全表。当天最后一条日志会标记“已确认”。
   </div>
-  <div class="premium-box">
-    <div class="row">
-      <span class="label">纳指建仓份额</span>
-      <input type="number" id="premShares" step="1" inputmode="numeric" placeholder="0">
-    </div>
-    <div class="row">
-      <span class="label">实际成交价</span>
-      <input type="number" id="premPrice" step="0.001" inputmode="decimal" placeholder="0">
-    </div>
-    <div class="row">
-      <span class="label">建仓日净值</span>
-      <input type="number" id="premNav" step="0.001" inputmode="decimal" placeholder="0">
-    </div>
-    <div class="row">
-      <span class="label">计算溢价成本</span>
-      <span class="mono" id="premCalc" style="font-weight:600;color:#e67e22">¥0</span>
-    </div>
-    <button class="btn-sec" onclick="recordPremium()">确认记录并冻结</button>
-    <button class="btn-sec" onclick="resetPremium()">清零溢价成本</button>
+  <div class="premium-input-row">
+    <span class="label">今日收盘价</span>
+    <input type="number" id="closePrice" step="0.001" inputmode="decimal" placeholder="如 1.630">
   </div>
-  <div id="premiumNote" class="muted" style="margin-top:8px;"></div>
+  <div class="premium-input-row">
+    <span class="label">今日真实溢价率（%）</span>
+    <input type="number" id="realPremium" step="0.1" inputmode="decimal" placeholder="如 15.5">
+  </div>
+  <div class="row" style="border-bottom:none;">
+    <span class="label">反推真实净值</span>
+    <span class="mono" id="impliedNav" style="font-weight:600;color:#27ae60">—</span>
+  </div>
+  <div style="margin-top:6px;">
+    <button class="btn-confirm" onclick="confirmNav()">确认今日净值</button>
+  </div>
+  <div id="confirmNote" class="muted" style="margin-top:6px;"></div>
 </div>
 
 <!-- 纳指溢价闸门（当前） -->
@@ -227,7 +287,7 @@ const CONFIG = {
     { dd: 8,  ratio: 0.3, label: '回撤8%档' },
     { dd: 12, ratio: 0.2, label: '回撤12%档' }
   ],
-  storageKey: 'fiveAssetDash_v3'
+  storageKey: 'fiveAssetDash_v4'
 };
 
 // ================= 状态 =================
@@ -239,6 +299,8 @@ function defaultState() {
     premium: null,
     premiumCost: 0,
     premiumDetail: null,
+    navConfirmedDate: null,   // 纳指净值确认日期
+    navConfirmedValue: null,  // 确认后的净值
     logs: [],
     lastRun: 0
   };
@@ -269,28 +331,19 @@ function log(msg) {
   const now = new Date();
   const h = now.getHours();
   const m = now.getMinutes();
-
-  // 0:00 – 9:29 忽略，不记录
   if (h < 9 || (h === 9 && m < 30)) return;
 
   const today = getLocalDateStr(now);
   const timeStr = now.toLocaleString('zh-CN');
-
   state.logs.unshift({ date: today, time: timeStr, msg });
 
-  // 按日期分组：今天全留，历史每天只留最后一条（数组首条即该日最新）
   const byDate = {};
-  state.logs.forEach(l => {
-    (byDate[l.date] = byDate[l.date] || []).push(l);
-  });
+  state.logs.forEach(l => { (byDate[l.date] = byDate[l.date] || []).push(l); });
 
   const cleaned = [];
   Object.keys(byDate).sort().reverse().forEach(date => {
-    if (date === today) {
-      cleaned.push(...byDate[date]);
-    } else {
-      cleaned.push(byDate[date][0]);
-    }
+    if (date === today) cleaned.push(...byDate[date]);
+    else cleaned.push(byDate[date][0]);
   });
 
   state.logs = cleaned.slice(0, 500);
@@ -303,6 +356,7 @@ function fmt(n) {
 }
 function pct(n) { return (n * 100).toFixed(1) + '%'; }
 function pp(n) { return (n >= 0 ? '+' : '') + n.toFixed(1) + 'pp'; }
+function nav4(n) { return (n === null || n === undefined || isNaN(n)) ? '—' : n.toFixed(4); }
 
 function renderInputs() {
   const tbody = document.getElementById('assetRows');
@@ -333,6 +387,23 @@ function renderInputs() {
     document.getElementById('premiumNote').textContent =
       `已冻结：${state.premiumDetail.shares} 份 × (${state.premiumDetail.price} − ${state.premiumDetail.nav}) = ${fmt(state.premiumDetail.cost)}`;
   }
+
+  renderNavStatus();
+}
+
+function renderNavStatus() {
+  const el = document.getElementById('navStatus');
+  const today = getLocalDateStr();
+  if (state.navConfirmedDate === today) {
+    el.innerHTML = `<span class="badge-confirmed">已确认 ${today}</span> ${nav4(state.navConfirmedValue)}`;
+    el.style.color = '#2e7d32';
+  } else if (state.navConfirmedDate) {
+    el.innerHTML = `<span class="badge-est">估算</span> 上次确认 ${state.navConfirmedDate}`;
+    el.style.color = '#e67e22';
+  } else {
+    el.innerHTML = `<span class="badge-est">估算</span> 尚未确认`;
+    el.style.color = '#e67e22';
+  }
 }
 
 function renderLogs() {
@@ -344,9 +415,7 @@ function renderLogs() {
 
   const today = getLocalDateStr();
   const byDate = {};
-  state.logs.forEach(l => {
-    (byDate[l.date] = byDate[l.date] || []).push(l);
-  });
+  state.logs.forEach(l => { (byDate[l.date] = byDate[l.date] || []).push(l); });
 
   let html = '';
   Object.keys(byDate).sort().reverse().forEach(date => {
@@ -416,6 +485,48 @@ function resetPremium() {
   state.premiumDetail = null;
   log('清零溢价成本');
   save(); renderInputs(); renderLogs(); run();
+}
+
+// ================= 收盘确认：纳指真实净值 =================
+document.getElementById('closePrice').addEventListener('input', updateImpliedNav);
+document.getElementById('realPremium').addEventListener('input', updateImpliedNav);
+
+function updateImpliedNav() {
+  const p = parseFloat(document.getElementById('closePrice').value) || 0;
+  const r = parseFloat(document.getElementById('realPremium').value);
+  const el = document.getElementById('impliedNav');
+  if (p > 0 && !isNaN(r) && r > -100) {
+    const nav = p / (1 + r / 100);
+    el.textContent = nav4(nav);
+    return nav;
+  }
+  el.textContent = '—';
+  return null;
+}
+
+function confirmNav() {
+  const p = parseFloat(document.getElementById('closePrice').value) || 0;
+  const r = parseFloat(document.getElementById('realPremium').value);
+  if (p <= 0 || isNaN(r)) { alert('请填写今日收盘价和真实溢价率'); return; }
+  if (r <= -100) { alert('溢价率不能小于 -100%'); return; }
+  const nav = p / (1 + r / 100);
+
+  const nasdaq = state.assets.find(a => a.id === 'nasdaq');
+  if (!nasdaq) return;
+
+  // 回写纳指净值为确认值
+  nasdaq.price = parseFloat(nav.toFixed(4));
+  const input = document.getElementById('pr-nasdaq');
+  if (input) input.value = nasdaq.price;
+
+  state.navConfirmedDate = getLocalDateStr();
+  state.navConfirmedValue = nasdaq.price;
+
+  log(`今日纳指净值确认：${nav4(nasdaq.price)}（收盘价 ${p}，溢价率 ${r}%）`);
+  save();
+  renderInputs();
+  renderLogs();
+  run();
 }
 
 // ================= 核心计算 =================
@@ -489,6 +600,8 @@ function run() {
   rsEl.innerHTML = html || '<div class="ok">当前回撤未触发备用金档位</div>';
   document.getElementById('reserveLeft').textContent = fmt(remaining);
 
+  renderNavStatus();
+
   const now = Date.now();
   if (now - state.lastRun > 60000) {
     log(`运行：策略市值 ${fmt(totalMV)}，回撤 ${drawdown.toFixed(2)}%，冻结溢价 ${fmt(state.premiumCost)}`);
@@ -523,7 +636,6 @@ function importBackup(e) {
     try {
       const data = JSON.parse(ev.target.result);
       if (!Array.isArray(data.assets)) throw new Error('文件格式不正确');
-      // 兼容旧版纯字符串日志
       if (data.logs && data.logs.length && typeof data.logs[0] === 'string') {
         data.logs = data.logs.map(s => ({ date: '1970-01-01', time: s, msg: s }));
       }
@@ -566,6 +678,10 @@ function clearAll() {
   document.getElementById('actualCost').textContent = '—';
   document.getElementById('premiumCostDisplay').textContent = '¥0';
   document.getElementById('premiumNote').textContent = '';
+  document.getElementById('closePrice').value = '';
+  document.getElementById('realPremium').value = '';
+  document.getElementById('impliedNav').textContent = '—';
+  document.getElementById('confirmNote').textContent = '';
 }
 
 // ================= 事件 =================
